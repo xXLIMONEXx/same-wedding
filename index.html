@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="b1jAWpfpWVt0ozuGXFkJIn">
+<head data-page-node-id="Kk5RSl46ngoOlG51ffBw9C">
+<meta charset="UTF-8" data-page-node-id="ur00QQXvIIMuS6MEIpNRws">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="d7I81FNwj0baeUryE2uKQI">
+<title>同一个婚礼 · An EPP Interactive Story</title>
+<style>
+  :root{
+    --ink:#1c2230;
+    --paper:#f2efe9;
+    --red:#c0281c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;background:#000;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:#fff}
+
+  /* ---------- 开场页 ---------- */
+  #intro{
+    position:fixed;inset:0;background:var(--paper);color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:200;transition:opacity .9s ease;text-align:center;padding:24px;
+  }
+  #intro.hidden{opacity:0;pointer-events:none}
+  #intro h1{font-size:clamp(34px,6vw,58px);letter-spacing:.35em;margin-bottom:6px;font-weight:600}
+  #intro .sub{font-size:13px;letter-spacing:.5em;color:#8a8577;margin-bottom:34px}
+  #intro p{max-width:520px;line-height:2;color:#55504a;font-size:15px;margin-bottom:8px}
+  #intro .fact{max-width:520px;font-size:13px;color:#98928a;margin-top:10px;line-height:1.9}
+  #startBtn{
+    margin-top:44px;padding:14px 58px;font-size:16px;letter-spacing:.4em;text-indent:.4em;
+    background:transparent;border:1px solid var(--ink);color:var(--ink);cursor:pointer;
+    transition:all .35s ease;border-radius:2px;
+  }
+  #startBtn:hover{background:var(--ink);color:var(--paper)}
+
+  /* ---------- 舞台 ---------- */
+  #stage{position:fixed;inset:0;overflow:hidden;background:#000}
+  .scene{position:absolute;inset:0;opacity:0;transition:opacity .55s ease}
+  .scene.on{opacity:1}
+  .scene svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+  /* 患者各阶段滤镜 */
+  .st1 svg{filter:saturate(.85) brightness(1.03)}
+  .st2 svg{filter:contrast(1.1) saturate(.88)}
+  .st3 svg{filter:blur(.6px) saturate(.78) hue-rotate(-8deg)}
+  .st4 svg{filter:blur(1.1px) saturate(.68) brightness(.92)}
+  .st5 svg{filter:blur(1.9px) saturate(.55) brightness(.8)}
+  .st6 svg{filter:blur(2.8px) saturate(.4) brightness(.66) contrast(1.12)}
+  .st7 svg{filter:blur(3.6px) saturate(.3) brightness(.5) contrast(1.22)}
+  .gray svg{filter:grayscale(1) contrast(1.28) brightness(.85)}
+  .scene svg{transition:filter 1.4s ease}
+
+  /* ---------- SVG 人物互动动画 ---------- */
+  [class*="an-"]{transform-box:fill-box;transform-origin:center}
+  .an-rock{animation:rock 2.6s ease-in-out infinite alternate;transform-origin:50% 100%}
+  @keyframes rock{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
+  .an-bob{animation:bob 1.9s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .an-nod{animation:nod 2.2s ease-in-out infinite}
+  @keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(3.5px)}}
+  .an-gesture{animation:gesture 1.5s ease-in-out infinite alternate;transform-origin:100% 70%}
+  @keyframes gesture{from{transform:rotate(-7deg)}to{transform:rotate(11deg)}}
+  .an-reach{animation:reach 3.4s ease-in-out infinite alternate}
+  @keyframes reach{from{transform:translate(0,0) rotate(0)}to{transform:translate(13px,7px) rotate(2.5deg)}}
+  .an-tremor{animation:tremor .35s linear infinite}
+  @keyframes tremor{0%,100%{transform:translate(0,0)}25%{transform:translate(1.5px,-1px)}50%{transform:translate(-1.5px,1px)}75%{transform:translate(1px,1.2px)}}
+  .an-hug{animation:hugLean 3.6s ease-in-out infinite alternate;transform-origin:50% 100%}
+  @keyframes hugLean{from{transform:translate(0,0) rotate(0)}to{transform:translate(-11px,2px) rotate(-2deg)}}
+  .an-fist{animation:fist 2.4s ease-in-out infinite alternate;transform-origin:50% 50%}
+  @keyframes fist{from{transform:scale(1)}to{transform:scale(1.14)}}
+  .an-drip{animation:drip 1.6s linear infinite}
+  @keyframes drip{0%{transform:translateY(0);opacity:0}20%{opacity:1}85%{opacity:1}100%{transform:translateY(24px);opacity:0}}
+  .an-ecg{stroke-dasharray:8 220;animation:ecg 2.6s linear infinite}
+  @keyframes ecg{from{stroke-dashoffset:228}to{stroke-dashoffset:0}}
+  .an-tear{animation:tearFall 3s ease-in infinite}
+  @keyframes tearFall{0%{transform:translateY(0);opacity:0}15%{opacity:1}70%{transform:translateY(24px);opacity:.9}100%{transform:translateY(32px);opacity:0}}
+  .cool svg{filter:saturate(.6) brightness(.9) hue-rotate(10deg)}
+  .dim svg{filter:brightness(.55) saturate(.7)}
+
+  /* 患者视角光晕与红晕叠加层 */
+  .ov{position:absolute;inset:0;pointer-events:none}
+  .ov1{background:radial-gradient(circle at 28% 18%,rgba(255,255,255,.5),rgba(255,255,255,0) 42%)}
+  .ov2{background:
+      radial-gradient(circle at 28% 18%,rgba(255,255,255,.62),rgba(255,255,255,0) 46%),
+      radial-gradient(ellipse at center,rgba(255,120,120,0) 52%,rgba(228,80,70,.38) 100%)}
+  .ov3{background:
+      radial-gradient(circle at 30% 15%,rgba(255,255,255,.55),rgba(255,255,255,0) 40%),
+      radial-gradient(ellipse at center,rgba(255,90,70,0) 38%,rgba(206,40,28,.62) 100%)}
+  .ov4{background:
+      radial-gradient(ellipse at center,rgba(190,20,12,.34) 0%,rgba(150,12,8,.72) 100%)}
+  .ov5{background:
+      radial-gradient(ellipse at center,rgba(160,10,8,.55) 0%,rgba(70,4,4,.9) 100%)}
+  .ov6{background:
+      radial-gradient(ellipse at center,rgba(120,6,6,.7) 0%,rgba(10,0,0,.96) 100%)}
+  .ov7{background:radial-gradient(ellipse at center,rgba(60,0,0,.85) 0%,#000 100%)}
+
+  /* ---------- 文字层 ---------- */
+  .caption{
+    position:absolute;top:6%;left:50%;transform:translateX(-50%);
+    font-size:14px;letter-spacing:.4em;text-indent:.4em;color:rgba(255,255,255,.85);
+    background:rgba(0,0,0,.28);padding:7px 18px;border-radius:20px;backdrop-filter:blur(2px);
+    animation:fadeUp 1.2s ease both;
+  }
+  .textbox{
+    position:absolute;left:50%;bottom:9%;transform:translateX(-50%);
+    max-width:min(640px,88vw);text-align:center;animation:fadeUp 1.4s ease both;
+  }
+  .mono{
+    font-size:clamp(16px,2.4vw,21px);line-height:1.9;letter-spacing:.06em;
+    color:#fdf6ec;text-shadow:0 1px 10px rgba(0,0,0,.7);
+    background:rgba(10,8,10,.5);padding:16px 28px;border-radius:10px;backdrop-filter:blur(3px);
+  }
+  .phys{
+    margin-top:12px;font-style:italic;font-size:clamp(12px,1.8vw,15px);
+    color:rgba(255,215,205,.85);letter-spacing:.05em;
+    text-shadow:0 1px 8px rgba(0,0,0,.8);
+  }
+  .mono.dark{background:rgba(240,238,232,.75);color:#2a2a33;text-shadow:none}
+  .phys.dark{color:#7c4038;text-shadow:none}
+  .mono.tremble{animation:fadeUp 1.4s ease both, tremble .18s infinite}
+  .mono.fading{animation:fadeUp 1.4s ease both, slowfade 4s ease 1.2s both}
+  .mono.echo{animation:fadeUp 1.6s ease both, echoPulse 3.2s ease-in-out infinite}
+
+  .bubble{
+    position:absolute;max-width:250px;padding:10px 16px;border-radius:14px;
+    background:rgba(255,255,255,.82);color:#333;font-size:13.5px;line-height:1.7;
+    box-shadow:0 2px 14px rgba(0,0,0,.25);animation:fadeUp 1.2s ease both;
+  }
+  .bubble:after{
+    content:"";position:absolute;left:22px;bottom:-8px;
+    border:8px solid transparent;border-top-color:rgba(255,255,255,.82);border-bottom:0;
+  }
+  .bubble.right:after{left:auto;right:22px}
+  .bubble.whisper{background:rgba(255,255,255,.6);font-size:12.5px;color:#4a4a55}
+  .bubble .who{display:block;font-size:11px;font-weight:600;color:#8a6242;margin-bottom:4px;letter-spacing:.2em}
+  .bubble.whisper .who{color:#77778a}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  @keyframes tremble{0%{transform:translateX(-50%) translateY(0) translate(0,0)}25%{transform:translateX(-50%) translateY(0) translate(1.4px,-1px)}50%{transform:translateX(-50%) translateY(0) translate(-1.2px,1px)}75%{transform:translateX(-50%) translateY(0) translate(1px,1.2px)}100%{transform:translateX(-50%) translateY(0) translate(0,0)}}
+  @keyframes slowfade{from{opacity:1}to{opacity:0;filter:blur(6px)}}
+  @keyframes echoPulse{0%,100%{opacity:.55}50%{opacity:1}}
+  @keyframes shakeCam{
+    0%,100%{transform:translate(0,0) rotate(0)}
+    20%{transform:translate(-9px,5px) rotate(-1.2deg)}
+    40%{transform:translate(8px,-6px) rotate(1deg)}
+    60%{transform:translate(-7px,-4px) rotate(-.8deg)}
+    80%{transform:translate(6px,7px) rotate(1.1deg)}
+  }
+  .shake{animation:shakeCam .32s infinite}
+  @keyframes faintFall{
+    0%{transform:rotate(0) scale(1)}
+    35%{transform:rotate(6deg) scale(1.06)}
+    70%{transform:rotate(88deg) scale(1.15)}
+    100%{transform:rotate(94deg) scale(1.3)}
+  }
+  .fainting{animation:faintFall 2.8s ease-in forwards}
+  .blackcover{position:absolute;inset:0;background:#000;pointer-events:none}
+
+  /* ---------- 界面控件 ---------- */
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:60}
+  .chip{
+    position:absolute;top:18px;left:18px;font-size:12px;letter-spacing:.3em;text-indent:.3em;
+    padding:6px 14px;border-radius:16px;background:rgba(0,0,0,.4);color:#eee;backdrop-filter:blur(3px);
+    transition:all .5s;
+  }
+  .chip.patient{background:rgba(150,16,10,.55);color:#ffd9d2}
+  #pauseBtn{
+    position:absolute;top:14px;right:16px;pointer-events:auto;cursor:pointer;
+    font-size:12px;letter-spacing:.2em;color:rgba(255,255,255,.75);
+    background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);
+    padding:6px 14px;border-radius:16px;backdrop-filter:blur(3px);transition:all .3s;
+  }
+  #pauseBtn:hover{color:#fff;background:rgba(0,0,0,.6)}
+  #bar{position:absolute;top:0;left:0;height:3px;background:linear-gradient(90deg,#e8b64c,#e05a3a);width:0%;transition:width .6s ease}
+  #hint{
+    position:absolute;bottom:16px;right:20px;font-size:12px;letter-spacing:.2em;
+    color:rgba(255,255,255,.45);animation:hintPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes hintPulse{0%,100%{opacity:.35}50%{opacity:.8}}
+
+  /* ---------- 结尾页 ---------- */
+  .endpage{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at center,#1d2a45 0%,#0b1020 100%);text-align:center;padding:24px;
+  }
+  .endpage .big{font-size:clamp(26px,4.6vw,42px);letter-spacing:.3em;margin-bottom:36px;font-weight:600}
+  .endpage .contrast{font-size:clamp(15px,2.4vw,20px);line-height:2.4;letter-spacing:.12em;color:#cfd8ea}
+  .endpage .contrast em{font-style:normal;color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:2px}
+  .endpage .q{margin-top:44px;font-size:clamp(20px,3.2vw,28px);letter-spacing:.25em;color:#fff}
+  .btnrow{margin-top:56px;display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+  .endbtn{
+    padding:13px 40px;font-size:15px;letter-spacing:.3em;text-indent:.3em;cursor:pointer;
+    background:transparent;color:#e8edf6;border:1px solid rgba(255,255,255,.5);border-radius:2px;transition:all .35s;
+  }
+  .endbtn:hover{background:#e8edf6;color:#0b1020}
+
+  /* ---------- 知识页 ---------- */
+  .know{
+    position:absolute;inset:0;background:#101826;overflow-y:auto;padding:56px 20px 80px;
+  }
+  .know .inner{max-width:680px;margin:0 auto;color:#dbe3ef}
+  .know h2{font-size:26px;letter-spacing:.2em;margin-bottom:8px;color:#fff}
+  .know .en{font-size:13px;color:#7f8ca3;margin-bottom:36px;letter-spacing:.08em}
+  .know h3{font-size:16px;color:#f0c987;margin:30px 0 12px;letter-spacing:.15em}
+  .know p,.know li{font-size:14.5px;line-height:2;color:#c3cddf}
+  .know ul{padding-left:22px;margin-top:6px}
+  .know .note{margin-top:30px;padding:18px 20px;background:rgba(240,201,135,.08);border-left:3px solid #f0c987;border-radius:0 6px 6px 0;font-size:13.5px;line-height:2;color:#e8dcc4}
+  .know .src{font-size:12px;color:#6d7a92;line-height:2;margin-top:26px}
+  .know .btnrow{position:relative;margin-top:44px}
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-thumb{background:#2c3a55;border-radius:4px}
+</style>
+</head>
+<body data-page-node-id="NW9m9CNFDyCMxoZ56VseeE">
+
+<!-- 开场引导 -->
+<div id="intro" data-page-node-id="kVMcXMhKqtMrpf3GiWlLhy">
+  <h1 data-page-node-id="VuVR9085Rp91pB08qOHF66">同一个婚礼</h1>
+  <div class="sub" data-page-node-id="MzuEtQgtZlu2SmDx5ztK0Q">THE SAME WEDDING</div>
+  <p data-page-node-id="wFk92d7S39Nj909KkTGAxI">这是一个关于选择与误解的故事。<br data-page-node-id="830htyJRVDP0vcUA03ffPL">你将看到同一场婚礼的两种视角。</p>
+  <p class="fact" data-page-node-id="0pM79EHcq5gFK9g3qzd8ZR">故事基于真实的医学事实与罕见病患者经历创作：<br data-page-node-id="c2KWEdXUEBxl90NKvyAb1y">红细胞生成性原卟啉症（EPP）患者，<br data-page-node-id="budyXWO1LvZuaLWnB9CzC4">即使短暂暴露在阳光下，也会经历剧烈的疼痛。</p>
+  <button id="startBtn" data-page-node-id="MX3MDtJMEFiwHUHHuz3UXF">开始体验</button>
+</div>
+
+<!-- 舞台 -->
+<div id="stage" data-page-node-id="CgiprJio5d8Go4RDuFH3HK"></div>
+
+<!-- 界面层 -->
+<div id="hud" data-page-node-id="O2PV8Jwq0t4zuK44oA8ThL">
+  <div id="bar" data-page-node-id="BhtkkWAJ2VtsNNWEGJhhUi"></div>
+  <div class="chip" id="viewChip" data-page-node-id="dmFMuXqRcVSpXQZv2E088E">普通视角</div>
+  <div id="pauseBtn" data-page-node-id="ejDAuvjNRbfkC6upPdE1wy">暂停</div>
+  <div id="hint" data-page-node-id="Ia4F1gIPn5DGqT9JESY1O1">点击画面继续</div>
+</div>
+
+<script>
+/* =====================================================
+   SVG 场景绘制
+===================================================== */
+function fig(x,y,h,shirt,skin,dress){
+  skin=skin||'#f0c29a';var w=h*0.34;var s='';
+  s+='<circle cx="'+x+'" cy="'+(y-h)+'" r="'+(h*0.115)+'" fill="'+skin+'"/>';
+  if(dress){
+    s+='<path d="M '+(x-w*0.75)+' '+y+' L '+(x+w*0.75)+' '+y+' L '+(x+w*0.32)+' '+(y-h*0.42)+' L '+(x-w*0.32)+' '+(y-h*0.42)+' Z" fill="'+shirt+'"/>';
+    s+='<rect x="'+(x-w*0.34)+'" y="'+(y-h*0.52)+'" width="'+(w*0.68)+'" height="'+(h*0.14)+'" rx="4" fill="'+shirt+'"/>';
+  }else{
+    s+='<rect x="'+(x-w/2)+'" y="'+(y-h*0.47)+'" width="'+w+'" height="'+(h*0.47)+'" rx="'+(w/2.4)+'" fill="'+shirt+'"/>';
+    s+='<rect x="'+(x-w*0.34)+'" y="'+(y-h*0.05)+'" width="'+(w*0.26)+'" height="'+(h*0.06)+'" fill="#2c313c"/>';
+    s+='<rect x="'+(x+w*0.08)+'" y="'+(y-h*0.05)+'" width="'+(w*0.26)+'" height="'+(h*0.06)+'" fill="#2c313c"/>';
+  }
+  return s;
+}
+function faceOn(x,y,r,exp){
+  var b='stroke="#3a2c20" stroke-width="'+(r*0.1).toFixed(1)+'" stroke-linecap="round" fill="none"';
+  var s='<circle cx="'+(x-r*0.36)+'" cy="'+(y+r*0.02)+'" r="'+(r*0.13)+'" fill="#2c2420"/>';
+  s+='<circle cx="'+(x+r*0.36)+'" cy="'+(y+r*0.02)+'" r="'+(r*0.13)+'" fill="#2c2420"/>';
+  if(exp==='angry'){
+    s+='<path d="M '+(x-r*0.62)+' '+(y-r*0.44)+' L '+(x-r*0.12)+' '+(y-r*0.26)+'" '+b+'/>';
+    s+='<path d="M '+(x+r*0.62)+' '+(y-r*0.44)+' L '+(x+r*0.12)+' '+(y-r*0.26)+'" '+b+'/>';
+    s+='<path d="M '+(x-r*0.4)+' '+(y+r*0.52)+' L '+(x+r*0.4)+' '+(y+r*0.52)+'" '+b+'/>';
+  }else if(exp==='sad'){
+    s+='<path d="M '+(x-r*0.62)+' '+(y-r*0.26)+' L '+(x-r*0.12)+' '+(y-r*0.44)+'" '+b+'/>';
+    s+='<path d="M '+(x+r*0.62)+' '+(y-r*0.26)+' L '+(x+r*0.12)+' '+(y-r*0.44)+'" '+b+'/>';
+    s+='<path d="M '+(x-r*0.36)+' '+(y+r*0.58)+' Q '+x+' '+(y+r*0.36)+' '+(x+r*0.36)+' '+(y+r*0.58)+'" '+b+'/>';
+  }else{
+    s+='<path d="M '+(x-r*0.5)+' '+(y-r*0.34)+' L '+(x-r*0.1)+' '+(y-r*0.4)+'" '+b+'/>';
+    s+='<path d="M '+(x+r*0.5)+' '+(y-r*0.34)+' L '+(x+r*0.1)+' '+(y-r*0.4)+'" '+b+'/>';
+    s+='<path d="M '+(x-r*0.3)+' '+(y+r*0.46)+' Q '+x+' '+(y+r*0.6)+' '+(x+r*0.3)+' '+(y+r*0.46)+'" '+b+'/>';
+  }
+  return s;
+}
+function hairTop(x,y,r,color){
+  return '<path d="M '+(x-r)+' '+(y-r*0.15)+' Q '+(x-r*0.7)+' '+(y-r*1.15)+' '+x+' '+(y-r*1.05)+' Q '+(x+r*0.7)+' '+(y-r*1.15)+' '+(x+r)+' '+(y-r*0.15)+' Q '+(x+r*0.55)+' '+(y-r*0.62)+' '+x+' '+(y-r*0.58)+' Q '+(x-r*0.55)+' '+(y-r*0.62)+' '+(x-r)+' '+(y-r*0.15)+' Z" fill="'+color+'"/>';
+}
+function chair(x,y,s){
+  return '<g transform="translate('+x+','+y+') scale('+s+')">'
+    +'<rect x="0" y="-15" width="26" height="7" rx="2" fill="#fdfaf2" stroke="#cfc7b4" stroke-width=".8"/>'
+    +'<rect x="0" y="0" width="26" height="9" rx="2" fill="#fff" stroke="#cfc7b4" stroke-width=".8"/>'
+    +'<rect x="2" y="-8" width="2.5" height="8" fill="#ddd5c2"/><rect x="21.5" y="-8" width="2.5" height="8" fill="#ddd5c2"/></g>';
+}
+function arch(x,y,s){
+  return '<g transform="translate('+x+','+y+') scale('+s+')">'
+    +'<rect x="-36" y="-64" width="7" height="66" rx="3" fill="#fdfaf2"/>'
+    +'<rect x="29" y="-64" width="7" height="66" rx="3" fill="#fdfaf2"/>'
+    +'<path d="M -36 -58 Q -3.5 -92 36 -58" fill="none" stroke="#fdfaf2" stroke-width="7" stroke-linecap="round"/>'
+    +'<circle cx="-33" cy="-64" r="5" fill="#ef8ba0"/><circle cx="-14" cy="-80" r="5" fill="#e4607e"/><circle cx="8" cy="-85" r="5" fill="#f2a6b8"/><circle cx="30" cy="-70" r="5" fill="#e4607e"/><circle cx="0" cy="-84" r="4.4" fill="#fff"/></g>';
+}
+function sun(x,y,r,warm){
+  return '<circle cx="'+x+'" cy="'+y+'" r="'+(r*2.1)+'" fill="url(#sunGlow)"/>'
+    +'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(warm||'#ffd76e')+'"/>';
+}
+function treeL(x,y,s){
+  return '<g transform="translate('+x+','+y+') scale('+s+')">'
+    +'<rect x="-6" y="-70" width="12" height="74" rx="4" fill="#7a5a3a"/>'
+    +'<circle cx="0" cy="-95" r="52" fill="#5f9e46"/><circle cx="-38" cy="-72" r="34" fill="#6fae4e"/><circle cx="36" cy="-76" r="36" fill="#54903e"/></g>';
+}
+function defs(){
+  return '<defs>'
+    +'<linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc0ee"/><stop offset=".62" stop-color="#bfe0f2"/><stop offset="1" stop-color="#ffedc9"/></linearGradient>'
+    +'<linearGradient id="lawnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d67c"/><stop offset="1" stop-color="#6faf52"/></linearGradient>'
+    +'<radialGradient id="sunGlow"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>'
+    +'<linearGradient id="lampG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98f"/><stop offset="1" stop-color="#ffd98f" stop-opacity="0"/></linearGradient>'
+    +'<linearGradient id="evenSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4d78"/><stop offset="1" stop-color="#c98a6a"/></linearGradient>'
+    +'</defs>';
+}
+function svgWrap(inner){
+  return '<svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">'+defs()+inner+'</svg>';
+}
+
+/* --- 图1/2 到达婚礼 --- */
+function scArrival(){
+  var s='<rect width="800" height="500" fill="url(#skyA)"/>'+sun(150,95,42)
+    +'<rect y="290" width="800" height="210" fill="url(#lawnG)"/>'
+    +'<path d="M 320 500 L 560 500 L 470 300 L 420 300 Z" fill="#e9ddbe"/>'
+    +treeL(80,330,1.35)+treeL(740,320,1.1)
+    +arch(445,235,1.5)
+    +'<rect x="408" y="292" width="80" height="8" rx="3" fill="#fff" opacity=".9"/>';
+  for(var r=0;r<3;r++){for(var i=0;i<6;i++){s+=chair(120+i*42+r*8,340+r*26,1-(r*0.14));s+=chair(560+i*30+r*6,340+r*26,1-(r*0.14));}}
+  return svgWrap(s);
+}
+
+/* --- 图3/4 宾客交谈 --- */
+function scGuests(){
+  var s='<rect width="800" height="500" fill="url(#skyA)"/>'+sun(660,80,38)
+    +'<rect y="300" width="800" height="200" fill="url(#lawnG)"/>'
+    +arch(400,225,1.1)+treeL(60,320,1)+treeL(745,315,0.85);
+  var gs=[[200,392,96,'#37405c',0,'#2c2620',0],[252,398,90,'#8e5a74',.7,'#54422f',1],
+          [340,402,86,'#4e6151',1.4,'#3c352c',0],[388,394,94,'#6b5a8e',.4,'#6e4a2c',1],
+          [560,396,92,'#3c4a63',1,'#241c14',0],[612,402,88,'#a06a4e',1.8,'#2c2620',0],
+          [690,392,98,'#5a6b52',.2,'#54422f',1]];
+  gs.forEach(function(g){
+    s+='<g class="an-rock" style="animation-delay:'+g[4]+'s">'
+      +fig(g[0],g[1],g[2],g[3],null,g[6]===1)
+      +hairTop(g[0],g[1]-g[2],Math.round(g[2]*0.105),g[5])
+      +faceOn(g[0],g[1]-g[2],Math.round(g[2]*0.1),'neutral')
+      +'</g>';
+  });
+  s+='<rect x="382" y="360" width="10" height="16" rx="3" fill="#cfe3f5"/><rect x="566" y="358" width="10" height="16" rx="3" fill="#f5d7cf"/>';
+  return svgWrap(s);
+}
+
+/* --- 图5/6 入座 --- */
+function scSeat(){
+  var s='<rect width="800" height="500" fill="url(#skyA)"/>'+sun(400,105,46)
+    +'<rect y="280" width="800" height="220" fill="url(#lawnG)"/>'
+    +'<path d="M 330 500 L 470 500 L 425 268 L 375 268 Z" fill="#f4ead2"/>'
+    +arch(400,220,1.35);
+  s+=fig(150,330,66,'#4e5d7d');s+=fig(640,332,68,'#7d5a6e',null,true);
+  s+=chair(210,392,1.5)+chair(560,392,1.5);
+  s+=chair(120,458,2.1)+chair(648,458,2.1);
+  return svgWrap(s);
+}
+
+/* --- 手部特写（level 1-3）--- */
+function scHands(level){
+  var s='<rect width="800" height="500" fill="url(#lawnG)"/>'
+    +'<circle cx="620" cy="80" r="150" fill="url(#sunGlow)"/><circle cx="620" cy="80" r="46" fill="#ffe9a0"/>'
+    +'<ellipse cx="400" cy="470" rx="420" ry="120" fill="#5f9e46" opacity=".6"/>';
+  function hand(cx,cy,flip){
+    var t='<g transform="translate('+cx+','+cy+') scale('+(flip?-1:1)+',1)">'
+      +'<rect x="-8" y="30" width="86" height="180" rx="34" fill="#f3c9a5" transform="rotate(14)"/>'
+      +'<ellipse cx="0" cy="40" rx="66" ry="52" fill="#f3c9a5"/>'
+      +'<rect x="-62" y="-88" width="26" height="96" rx="13" fill="#f3c9a5" transform="rotate(-6 -49 -40)"/>'
+      +'<rect x="-30" y="-104" width="27" height="112" rx="13" fill="#f3c9a5"/>'
+      +'<rect x="2" y="-100" width="27" height="108" rx="13" fill="#f3c9a5" transform="rotate(3 15 -46)"/>'
+      +'<rect x="34" y="-84" width="26" height="92" rx="13" fill="#f3c9a5" transform="rotate(8 47 -38)"/>'
+      +'<rect x="44" y="20" width="66" height="27" rx="13" fill="#f3c9a5" transform="rotate(-38 77 33)"/>';
+    var op=level===1?0.28:(level===2?0.52:0.8);
+    t+='<ellipse cx="6" cy="42" rx="46" ry="34" fill="#dd5040" opacity="'+op+'"/>'
+      +'<ellipse cx="-38" cy="-52" rx="10" ry="16" fill="#dd5040" opacity="'+(op*0.8)+'"/>'
+      +'<ellipse cx="20" cy="-58" rx="9" ry="15" fill="#dd5040" opacity="'+(op*0.7)+'"/>';
+    if(level>=2){
+      for(var i=0;i<9;i++){
+        var bx=(i*37)%90-45, by=8+(i*17)%52;
+        t+='<circle cx="'+bx+'" cy="'+by+'" r="'+(3.4+(i%3))+'" fill="#fbe3d2" stroke="#c94534" stroke-width="1.2"/>';
+      }
+    }
+    if(level>=3){
+      t+='<ellipse cx="-20" cy="60" rx="30" ry="18" fill="#a83226" opacity=".55"/>'
+        +'<ellipse cx="0" cy="40" rx="66" ry="52" fill="none" stroke="#d24a38" stroke-width="3" opacity=".7"/>';
+    }
+    return t+'</g>';
+  }
+  s+=(level>=2?'<g class="an-tremor">':'<g>')+hand(300,300,false)+hand(520,316,true)+'</g>';
+  return svgWrap(s);
+}
+
+/* --- 图10 望向过道 --- */
+function scAisle(){
+  var s='<rect width="800" height="500" fill="url(#skyA)"/>'
+    +'<rect y="250" width="800" height="250" fill="url(#lawnG)"/>'
+    +'<path d="M 260 500 L 540 500 L 435 240 L 365 240 Z" fill="#f7f0dd"/>'
+    +arch(400,160,1.05);
+  for(var i=0;i<7;i++){
+    var yy=290+i*30, ss=0.75+i*0.09;
+    s+='<circle cx="'+(300-i*14)+'" cy="'+(yy-46*ss)+'" r="'+(15*ss)+'" fill="#3a3f4a" opacity=".85"/>';
+    s+='<circle cx="'+(500+i*14)+'" cy="'+(yy-46*ss)+'" r="'+(15*ss)+'" fill="#4a4050" opacity=".85"/>';
+  }
+  s+=fig(400,268,54,'#fff','#f0c29a',true);
+  s+='<circle cx="400" cy="222" r="12" fill="#f0c29a"/>';
+  return svgWrap(s);
+}
+
+/* --- 图11/12 新娘走来 --- */
+function scBride(){
+  var s='<rect width="800" height="500" fill="url(#skyA)"/>'+sun(400,120,52)
+    +'<rect y="270" width="800" height="230" fill="url(#lawnG)"/>'
+    +'<path d="M 250 500 L 550 500 L 445 250 L 355 250 Z" fill="#f7f0dd"/>';
+  for(var i=0;i<6;i++){
+    var yy=300+i*32, ss=0.7+i*0.1;
+    s+='<circle cx="'+(280-i*12)+'" cy="'+(yy-40*ss)+'" r="'+(14*ss)+'" fill="#3a3f4a" opacity=".8"/>';
+    s+='<circle cx="'+(520+i*12)+'" cy="'+(yy-40*ss)+'" r="'+(14*ss)+'" fill="#453c50" opacity=".8"/>';
+  }
+  s+='<g transform="translate(400,330)"><g class="an-bob">'
+    +'<path d="M -52 170 L 52 170 L 22 -40 L -22 -40 Z" fill="#ffffff"/>'
+    +'<path d="M -30 60 Q 0 90 30 60 L 22 -40 L -22 -40 Z" fill="#f4f0f8"/>'
+    +'<circle cx="0" cy="-58" r="20" fill="#f0c29a"/>'
+    +'<path d="M -20 -70 Q 0 -96 20 -70 L 14 -40 L -14 -40 Z" fill="#fff"/>'
+    +'<path d="M -20 -66 Q -34 -20 -14 6" fill="none" stroke="#fff" stroke-width="7" opacity=".85"/>'
+    +'<circle cx="-38" cy="14" r="9" fill="#e4607e"/><circle cx="-30" cy="2" r="8" fill="#f2a6b8"/><circle cx="-46" cy="2" r="7" fill="#fff"/>'
+    +'</g></g>';
+  return svgWrap(s);
+}
+
+/* --- 图13/14 拱门下新人 --- */
+function scArchCouple(){
+  var s='<rect width="800" height="500" fill="#f6dfa8"/>'
+    +sun(400,235,90,'#fff4d6')
+    +'<rect y="360" width="800" height="140" fill="#8fbc6a"/>'
+    +arch(400,330,2.2);
+  s+='<g transform="translate(368,420)"><circle cx="0" cy="-52" r="17" fill="#4a3a30"/><path d="M -20 60 L 20 60 L 14 -36 L -14 -36 Z" fill="#2e3440"/></g>';
+  s+='<g transform="translate(432,422)"><path d="M -40 60 L 40 60 L 16 -34 L -16 -34 Z" fill="#fff"/><circle cx="0" cy="-50" r="16" fill="#f0c29a"/><path d="M -16 -62 Q 0 -84 16 -62 L 10 -34 L -10 -34 Z" fill="#fff"/></g>';
+  s+=fig(300,438,64,'#3c4452');s+=fig(505,440,62,'#5a4a5e',null,true);
+  return svgWrap(s);
+}
+
+/* --- 图17 医院天花板（苏醒） --- */
+function scCeiling(){
+  var s='<rect width="800" height="500" fill="#e9edf1"/>'
+    +'<polygon points="0,0 800,0 640,500 160,500" fill="#f4f6f8"/>'
+    +'<rect x="250" y="120" width="300" height="180" rx="8" fill="#ffffff" stroke="#cdd4db" stroke-width="3"/>'
+    +'<rect x="268" y="138" width="264" height="144" rx="5" fill="#fbfcfd"/>'
+    +'<rect x="0" y="60" width="130" height="380" fill="#dde3e9"/><rect x="670" y="60" width="130" height="380" fill="#dde3e9"/>'
+    +'<rect x="380" y="330" width="44" height="160" fill="#c3ccd4"/><ellipse cx="402" cy="492" rx="70" ry="14" fill="#b6bfc8"/>';
+  return svgWrap(s);
+}
+
+/* --- 图18 病房中的人们（白婚纱新娘 / 完善设施 / 精细化病人） --- */
+function scRoom(){
+  var s='<rect width="800" height="500" fill="#e2e9ef"/>'
+    +'<rect y="234" width="800" height="12" fill="#c3cfd9"/>'
+    +'<rect y="246" width="800" height="94" fill="#d5dee6"/>'
+    +'<rect y="340" width="800" height="160" fill="#b9c6d2"/>'
+    +'<path d="M 0 385 H 800 M 0 440 H 800" stroke="#a8b6c2" stroke-width="2" opacity=".7"/>'
+    +'<path d="M 140 340 L 100 500 M 340 340 L 320 500 M 540 340 L 545 500 M 700 340 L 730 500" stroke="#a8b6c2" stroke-width="2" opacity=".7"/>';
+  /* 傍晚的窗 */
+  s+='<rect x="592" y="44" width="168" height="180" rx="6" fill="#8fa8c4"/>'
+    +'<rect x="600" y="52" width="152" height="164" fill="url(#evenSky)"/>'
+    +'<circle cx="676" cy="188" r="15" fill="#f2b06a" opacity=".9"/>'
+    +'<rect x="600" y="128" width="152" height="5" fill="#7d95b2"/><rect x="672" y="52" width="5" height="164" fill="#7d95b2"/>'
+    +'<rect x="584" y="36" width="184" height="196" rx="8" fill="none" stroke="#c9d4dd" stroke-width="6"/>';
+  /* 医疗隔帘 */
+  s+='<rect x="368" y="30" width="200" height="10" rx="5" fill="#9fb2c4"/>'
+    +'<path d="M 372 40 L 564 40 L 558 214 Q 528 202 500 216 Q 470 202 442 216 Q 410 204 378 214 Z" fill="#b8cade"/>'
+    +'<path d="M 420 42 L 414 210 M 470 42 L 468 212 M 520 42 L 524 208" stroke="#a4b8ca" stroke-width="3" fill="none"/>';
+  /* 墙面氧气口 + 病历表 */
+  s+='<rect x="28" y="66" width="28" height="64" rx="5" fill="#c9d4dd" stroke="#aebccb"/><circle cx="42" cy="86" r="5" fill="#8fa3b8"/><circle cx="42" cy="108" r="5" fill="#8fa3b8"/>'
+    +'<rect x="88" y="60" width="58" height="78" rx="4" fill="#fff" stroke="#c3cfd9"/><rect x="96" y="70" width="42" height="5" fill="#9fb2c4"/><rect x="96" y="84" width="32" height="4" fill="#c9d4dd"/><rect x="96" y="96" width="38" height="4" fill="#c9d4dd"/><rect x="96" y="108" width="26" height="4" fill="#c9d4dd"/><rect x="96" y="122" width="34" height="4" fill="#c9d4dd"/>';
+  /* 病床 */
+  s+='<rect x="42" y="196" width="20" height="152" rx="8" fill="#9fb0bf"/>'
+    +'<rect x="62" y="248" width="358" height="52" rx="12" fill="#e9e2f2"/>'
+    +'<rect x="62" y="298" width="358" height="14" rx="6" fill="#b6aecb"/>'
+    +'<rect x="86" y="360" width="16" height="68" fill="#8a98a6"/><rect x="380" y="360" width="16" height="68" fill="#8a98a6"/>'
+    +'<circle cx="94" cy="434" r="9" fill="#6e7c8a"/><circle cx="388" cy="434" r="9" fill="#6e7c8a"/>';
+  /* 枕头 + 精细化的病人头部（疲惫神态、额头纱布） */
+  s+='<rect x="82" y="238" width="106" height="36" rx="15" fill="#ffffff"/>'
+    +'<g transform="translate(128,246)">'
+    +'<circle cx="0" cy="0" r="24" fill="#eccfb4"/>'
+    +'<path d="M -24 -6 Q -27 -30 0 -30 Q 27 -30 24 -6 L 18 -12 Q 0 -22 -18 -12 Z" fill="#241c14"/>'
+    +'<path d="M -14 -2 L -4 -2 M 4 -2 L 14 -2" stroke="#5a4634" stroke-width="2.6" stroke-linecap="round"/>'
+    +'<circle cx="-8.5" cy="-2" r="2.1" fill="#2c2420"/><circle cx="8.5" cy="-2" r="2.1" fill="#2c2420"/>'
+    +'<path d="M -8 -12 L -3 -10 M 8 -12 L 3 -10" stroke="#3a2c20" stroke-width="1.6" stroke-linecap="round"/>'
+    +'<path d="M -7 12 Q 0 9 7 12" stroke="#8a5a44" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    +'<rect x="7" y="-24" width="17" height="12" rx="3" fill="#f6f8fa" stroke="#dbe2e8" transform="rotate(12 15 -18)"/>'
+    +'</g>';
+  /* 病号服与毯子下的身体 */
+  s+='<path d="M 146 280 Q 158 258 186 256 L 216 256 Q 240 258 248 280 L 244 300 L 150 300 Z" fill="#9fb6d8"/>'
+    +'<path d="M 200 258 L 196 276 M 206 258 L 210 276" stroke="#8aa2c4" stroke-width="2.4"/>'
+    +'<path d="M 240 266 Q 324 252 420 266 L 424 300 L 236 300 Z" fill="#cfe0ee"/>'
+    +'<path d="M 272 266 L 264 300 M 318 262 L 314 300 M 364 262 L 362 300" stroke="#b6c8da" stroke-width="3" fill="none"/>';
+  /* 包扎的手（微微颤抖） */
+  s+='<g class="an-tremor"><ellipse cx="290" cy="274" rx="31" ry="16" fill="#f6f8fa"/>'
+    +'<path d="M 264 270 Q 290 263 316 271 M 262 279 Q 290 272 318 280" stroke="#dbe2e8" stroke-width="2.4" fill="none"/>'
+    +'<ellipse cx="298" cy="274" rx="9" ry="5" fill="#c0392b" opacity=".38"/><circle cx="276" cy="278" r="2.6" fill="#c0392b" opacity=".5"/>'
+    +'<path d="M 238 284 Q 264 280 290 274" stroke="#c9d4dd" stroke-width="2.4" fill="none"/></g>';
+  /* 输液架（滴液动画） */
+  s+='<rect x="428" y="182" width="6" height="198" fill="#8fa3b8"/>'
+    +'<path d="M 431 182 L 407 158 M 431 182 L 455 158" stroke="#8fa3b8" stroke-width="5"/>'
+    +'<rect x="408" y="158" width="36" height="48" rx="7" fill="#e6eef4" stroke="#a9bccd"/>'
+    +'<rect x="408" y="158" width="36" height="22" rx="7" fill="#c8dff0"/>'
+    +'<rect x="420" y="206" width="14" height="20" rx="4" fill="#dbe6ee" stroke="#a9bccd"/>'
+    +'<circle class="an-drip" cx="427" cy="212" r="2.6" fill="#8fc3e8"/>'
+    +'<ellipse cx="431" cy="384" rx="34" ry="8" fill="#7e8c9a"/>';
+  /* 心电监护仪（绿色波形动画） */
+  s+='<rect x="474" y="148" width="6" height="232" fill="#8fa3b8"/>'
+    +'<rect x="446" y="192" width="74" height="56" rx="6" fill="#1c2430" stroke="#39415c" stroke-width="2"/>'
+    +'<polyline class="an-ecg" points="450,228 462,228 466,214 472,242 478,228 492,228 496,218 502,238 508,228 516,228" fill="none" stroke="#58e08c" stroke-width="2"/>'
+    +'<ellipse cx="477" cy="384" rx="26" ry="6" fill="#7e8c9a"/>';
+  /* 新娘：白色婚纱 + 暖光 + 落泪动画 */
+  s+='<circle cx="582" cy="262" r="118" fill="url(#lampG)" opacity=".5"/>';
+  s+='<g transform="translate(582,330)">'
+    +'<path d="M -40 8 L 40 8 L 24 -62 L -24 -62 Z" fill="#fdfdfb"/>'
+    +'<path d="M -40 8 L 40 8 L 33 24 L -33 24 Z" fill="#f2eef6"/>'
+    +'<path d="M -33 8 Q -37 16 -30 24 M 33 8 Q 37 16 30 24 M -12 6 Q -12 16 -10 24 M 12 6 Q 12 16 10 24" stroke="#e4def0" stroke-width="2" fill="none"/>'
+    +'<rect x="-26" y="-80" width="52" height="22" rx="9" fill="#fdfdfb"/>'
+    +'<path d="M -26 -74 Q -35 -50 -28 -32 L -19 -37 Q -25 -56 -21 -70 Z" fill="#fdfdfb"/>'
+    +'<path d="M 26 -74 Q 35 -50 28 -32 L 19 -37 Q 25 -56 21 -70 Z" fill="#fdfdfb"/>'
+    +'<path d="M -24 -64 Q -26 -44 -20 -34 M 24 -64 Q 26 -44 20 -34" stroke="#e8e2f0" stroke-width="1.6" fill="none"/>'
+    +'<path d="M -22 -100 Q -30 -62 -19 -40 L -10 -45 Q -18 -72 -13 -96 Z" fill="#54422f"/>'
+    +'<path d="M 22 -100 Q 30 -62 19 -40 L 10 -45 Q 18 -72 13 -96 Z" fill="#54422f"/>'
+    +'<circle cx="0" cy="-92" r="19" fill="#f0c29a"/>'
+    +'<path d="M -20 -104 Q 0 -118 20 -104 L 15 -92 Q 0 -102 -15 -92 Z" fill="#54422f"/>'
+    +faceOn(0,-92,17,'sad')
+    +'<path d="M -11 -84 Q -14 -74 -11 -64 M 11 -84 Q 14 -74 11 -64" stroke="#a9c4e0" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    +'<g class="an-tear"><path d="M -11 -66 q -3.5 9 0 13 q 4.5 -4 0 -13" fill="#bcd4ee"/></g>'
+    +'<g class="an-tear" style="animation-delay:1.5s"><path d="M 12 -66 q -3.5 9 0 13 q 4.5 -4 0 -13" fill="#bcd4ee"/></g>'
+    +'<path d="M -30 -34 Q -40 -18 -34 -6" stroke="#fdfdfb" stroke-width="7" stroke-linecap="round" fill="none"/>'
+    +'</g>';
+  /* 新郎：深色西装 + 白衬衫领带 + 胸花，冷漠 */
+  s+='<g transform="translate(668,322)">'
+    +'<rect x="-27" y="-66" width="54" height="76" rx="14" fill="#22262e"/>'
+    +'<rect x="-20" y="-66" width="40" height="34" fill="#f4f2ec"/>'
+    +'<path d="M 0 -66 L -8 -48 L 0 -28 L 8 -48 Z" fill="#39415c"/>'
+    +'<circle cx="0" cy="-84" r="20" fill="#f0c8a8"/>'
+    +hairTop(0,-84,19,'#1e1a16')
+    +faceOn(0,-84,17,'angry')
+    +'<circle cx="19" cy="-56" r="4.5" fill="#e4607e"/><circle cx="19" cy="-56" r="2" fill="#fff"/>'
+    +'</g>';
+  /* 陌生宾客 */
+  s+='<g transform="translate(738,314)"><rect x="-20" y="-48" width="40" height="56" rx="12" fill="#6a7280"/><circle cx="0" cy="-62" r="16" fill="#e8b48c"/>'+hairTop(0,-62,15,'#2c2620')+faceOn(0,-62,14,'neutral')+'</g>';
+  s+='<g transform="translate(782,322)"><path d="M -20 -46 L 20 -46 L 28 14 L -28 14 Z" fill="#8a7a96"/><circle cx="0" cy="-60" r="15" fill="#f0c8a8"/><path d="M -15 -66 Q 0 -80 15 -66 L 15 -56 Q 0 -66 -15 -56 Z" fill="#6e4a2c"/>'+faceOn(0,-60,13,'neutral')+'</g>';
+  s+='<g transform="translate(700,304)"><rect x="-19" y="-46" width="38" height="54" rx="11" fill="#5d6b7a"/><circle cx="0" cy="-58" r="15" fill="#d8a878"/>'+hairTop(0,-58,14,'#3c352c')+'<circle cx="-4" cy="-57" r="5" fill="none" stroke="#2c313c" stroke-width="1.5"/><circle cx="6" cy="-57" r="5" fill="none" stroke="#2c313c" stroke-width="1.5"/>'+faceOn(0,-58,13,'neutral')+'</g>';
+  return svgWrap(s);
+}
+
+/* --- 图19 新娘安慰 --- */
+function scBrideHold(){
+  var s='<rect width="800" height="500" fill="#d7dfe7"/><rect y="360" width="800" height="140" fill="#aebcc9"/>';
+  s+='<rect x="60" y="240" width="300" height="100" rx="10" fill="#e6dcf0"/><rect x="50" y="222" width="320" height="30" rx="8" fill="#d2c5e6"/>';
+  s+='<g transform="translate(430,300)">'
+    +'<path d="M -20 200 L 60 200 L 44 40 L 8 30 Z" fill="#fdfdfb"/>'
+    +'<path d="M -14 60 Q 20 74 52 58 M -8 110 Q 22 122 48 106 M 0 160 Q 24 170 42 156" stroke="#e4def0" stroke-width="2.4" fill="none"/>'
+    +'<path d="M -22 -10 Q -44 70 -22 140 L -4 134 Q -16 60 -8 -6 Z" fill="#54422f"/>'
+    +'<path d="M 20 -14 Q 42 66 22 138 L 6 132 Q 18 58 6 -8 Z" fill="#54422f"/>'
+    +'<circle cx="0" cy="0" r="26" fill="#f0c29a"/>'
+    +'<path d="M -26 -8 Q 0 -30 26 -8 L 20 4 Q 0 -12 -20 4 Z" fill="#54422f"/>'
+    +faceOn(0,2,21,'sad')
+    +'<path d="M -13 -6 Q -17 8 -13 22 M 13 -6 Q 17 8 13 22" stroke="#a9c4e0" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
+    +'<g class="an-tear"><path d="M -13 26 q -3.5 9 0 13 q 4.5 -4 0 -13" fill="#bcd4ee"/></g>'
+    +'<g class="an-tear" style="animation-delay:1.4s"><path d="M 14 26 q -3.5 9 0 13 q 4.5 -4 0 -13" fill="#bcd4ee"/></g>'
+    +'<g class="an-reach"><path d="M -4 46 Q 40 30 66 54 L 58 74 Q 30 56 0 68 Z" fill="#f0c29a"/></g>'
+    +'<circle cx="12" cy="-4" r="4" fill="#c0392b" opacity=".5"/><circle cx="20" cy="-2" r="3.6" fill="#c0392b" opacity=".45"/>'
+    +'</g>';
+  s+='<g transform="translate(240,330)"><g class="an-tremor"><ellipse cx="0" cy="30" rx="40" ry="26" fill="#f3c9a5"/><ellipse cx="6" cy="34" rx="24" ry="15" fill="#dd5040" opacity=".55"/><rect x="30" y="-70" width="26" height="90" rx="12" fill="#f3c9a5" transform="rotate(-30 43 -25)"/></g></g>';
+  s+='<circle cx="418" cy="290" r="4" fill="#9db8d4"/><circle cx="430" cy="294" r="4" fill="#9db8d4"/>';
+  return svgWrap(s);
+}
+
+/* --- 图20 新郎冷眼 --- */
+function scGroomFace(){
+  var s='<rect width="800" height="500" fill="#cfd6dd"/><rect y="330" width="800" height="170" fill="#9fabb7"/>';
+  s+='<g transform="translate(400,250)">'
+    +'<ellipse cx="0" cy="10" rx="120" ry="150" fill="#f0c8a8"/>'
+    +'<path d="M -120 -30 Q -80 -150 0 -140 Q 80 -150 120 -30 Q 60 -80 0 -76 Q -60 -80 -120 -30 Z" fill="#2a2622"/>'
+    +'<path d="M -80 -20 L -20 -6" stroke="#3a322c" stroke-width="9" stroke-linecap="round"/>'
+    +'<path d="M 80 -20 L 20 -6" stroke="#3a322c" stroke-width="9" stroke-linecap="round"/>'
+    +'<ellipse cx="-48" cy="14" rx="13" ry="9" fill="#3a322c"/><ellipse cx="48" cy="14" rx="13" ry="9" fill="#3a322c"/>'
+    +'<path d="M -34 96 Q 0 88 34 96" stroke="#7a4638" stroke-width="7" fill="none" stroke-linecap="round"/>'
+    +'<path d="M -96 60 Q -130 110 -108 150 L -80 130 Q -98 96 -82 70 Z" fill="#f0c8a8"/>'
+    +'<g class="an-fist"><ellipse cx="-104" cy="152" rx="34" ry="30" fill="#f0c8a8"/><ellipse cx="-108" cy="150" rx="30" ry="26" fill="#e0b088"/></g>'
+    +'<path d="M -170 260 Q -150 170 -60 150 L -30 190 L 0 240 L 30 190 L 60 150 Q 150 170 170 260 Z" fill="#22262e"/>'
+    +'<path d="M -34 152 L 0 240 L 34 152 L 14 144 L 0 160 L -14 144 Z" fill="#f4f2ec"/>'
+    +'<path d="M 0 160 L -12 180 L 0 210 L 12 180 Z" fill="#39415c"/>'
+    +'<circle cx="52" cy="176" r="7" fill="#e4607e"/><circle cx="52" cy="176" r="3" fill="#fff"/>'
+    +'</g>';
+  return svgWrap(s);
+}
+
+/* --- 图21 拥抱 --- */
+function scHug(){
+  var s='<rect width="800" height="500" fill="#3a3f4c"/><rect y="340" width="800" height="160" fill="#2c303b"/>';
+  s+='<circle cx="620" cy="120" r="60" fill="url(#lampG)"/><circle cx="620" cy="120" r="16" fill="#ffdf9e"/>';
+  s+='<rect x="612" y="120" width="4" height="220" fill="#565c6a"/>';
+  s+='<rect x="70" y="260" width="320" height="96" rx="10" fill="#4a5060"/><rect x="60" y="242" width="340" height="28" rx="8" fill="#3f4553"/>';
+  s+='<g transform="translate(300,320)">'
+    +'<path d="M -30 140 L 30 140 L 24 0 L -24 0 Z" fill="#23272f"/>'
+    +'<circle cx="0" cy="-24" r="22" fill="#e8b48c"/>'
+    +'<path d="M -22 -32 Q 0 -52 22 -32 L 19 -16 Q 0 -30 -19 -16 Z" fill="#241c14"/>'
+    +'<path d="M 6 -6 Q 60 10 74 62 Q 76 84 52 84 Q 28 60 0 54 Z" fill="#2e3440"/>'
+    +'<path d="M -8 -2 Q -66 16 -76 70 Q -78 92 -52 88 Q -26 62 2 56 Z" fill="#2e3440"/>'
+    +'</g>';
+  s+='<g transform="translate(368,308)"><g class="an-hug">'
+    +'<path d="M -22 150 L 22 150 L 18 10 L -18 10 Z" fill="#5d4a66"/>'
+    +'<circle cx="0" cy="-14" r="21" fill="#f0c29a"/>'
+    +'<path d="M -21 -22 Q 0 -42 21 -22 L 18 -4 Q 0 -18 -18 -4 Z" fill="#3c352c"/>'
+    +'<path d="M -18 6 Q -46 40 -20 78 L 4 70 Q -10 40 6 14 Z" fill="#5d4a66"/>'
+    +'</g></g>';
+  return svgWrap(s);
+}
+
+/* --- 图22 崩溃 --- */
+function scBreakdown(){
+  var s='<rect width="800" height="500" fill="#262a34"/>'
+    +'<circle cx="560" cy="90" r="66" fill="url(#lampG)"/><circle cx="560" cy="90" r="15" fill="#ffe1a8"/>';
+  s+='<rect x="60" y="280" width="420" height="120" rx="10" fill="#343947"/><rect x="50" y="260" width="440" height="30" rx="8" fill="#2c313d"/>';
+  s+='<g transform="translate(320,300)"><g class="an-tremor">'
+    +'<path d="M -36 150 Q -50 40 -10 6 L 16 6 Q 52 44 38 150 Z" fill="#1d2129"/>'
+    +'<circle cx="8" cy="-22" r="24" fill="#d8ab84"/>'
+    +'<path d="M 20 -8 Q 78 14 92 66 L 60 80 Q 40 36 8 26 Z" fill="#1d2129"/>'
+    +'<path d="M -12 -46 Q 8 -56 26 -44" stroke="#c99066" stroke-width="4" fill="none"/>'
+    +'<path d="M 22 -16 Q 26 -10 20 -4" stroke="#bcd4ee" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    +'</g></g>';
+  s+='<g opacity=".35"><circle cx="620" cy="300" r="12" fill="#454b5a"/><rect x="604" y="312" width="34" height="60" fill="#454b5a"/><circle cx="690" cy="296" r="11" fill="#4d5364"/><rect x="676" y="308" width="30" height="58" fill="#4d5364"/></g>';
+  return svgWrap(s);
+}
+
+/* --- 餐厅通用陈设 --- */
+function restInterior(wall){
+  var s='<rect width="800" height="500" fill="'+wall+'"/>'
+    +'<rect y="236" width="800" height="64" fill="rgba(0,0,0,.16)"/>'
+    +'<rect y="236" width="800" height="4" fill="rgba(255,255,255,.08)"/>'
+    +'<path d="M 40 244 V 292 M 180 244 V 292 M 320 244 V 292 M 460 244 V 292 M 600 244 V 292 M 740 244 V 292" stroke="rgba(255,255,255,.05)" stroke-width="3"/>'
+    +'<rect y="300" width="800" height="200" fill="#3c2b1b"/>'
+    +'<path d="M 0 340 H 800 M 0 390 H 800 M 0 450 H 800" stroke="rgba(0,0,0,.25)" stroke-width="2"/>'
+    +'<path d="M 100 300 L 40 500 M 260 300 L 230 500 M 420 300 L 420 500 M 580 300 L 610 500 M 740 300 L 790 500" stroke="rgba(0,0,0,.2)" stroke-width="2"/>'
+    +'<rect x="36" y="56" width="128" height="92" rx="6" fill="#241811" stroke="#5d4028" stroke-width="4"/>'
+    +'<rect x="48" y="70" width="70" height="6" rx="3" fill="#d8c9a8" opacity=".8"/>'
+    +'<rect x="48" y="88" width="100" height="4" rx="2" fill="#b8a888" opacity=".55"/>'
+    +'<rect x="48" y="100" width="86" height="4" rx="2" fill="#b8a888" opacity=".55"/>'
+    +'<rect x="48" y="112" width="94" height="4" rx="2" fill="#b8a888" opacity=".55"/>'
+    +'<rect x="48" y="124" width="60" height="4" rx="2" fill="#b8a888" opacity=".55"/>'
+    +'<rect x="640" y="46" width="130" height="110" rx="6" fill="#1a1410"/>'
+    +'<rect x="648" y="54" width="114" height="94" fill="#2c3a55"/>'
+    +'<circle cx="680" cy="120" r="9" fill="#ffd98f" opacity=".8"/><circle cx="730" cy="90" r="6" fill="#ffd98f" opacity=".6"/>'
+    +'<rect x="648" y="96" width="114" height="4" fill="#1a1410"/><rect x="700" y="54" width="4" height="94" fill="#1a1410"/>'
+    +'<g transform="translate(758,296)"><path d="M -20 0 Q -34 -50 -10 -84 Q 0 -50 6 -2 Z" fill="#3f5a38"/><path d="M 2 0 Q 26 -44 12 -78 Q -4 -46 -8 -2 Z" fill="#4a6a42"/><path d="M -24 0 L 24 0 L 18 26 L -18 26 Z" fill="#8a5f3d"/></g>';
+  return s;
+}
+function pendant(x,y){
+  return '<rect x="'+(x-3)+'" y="0" width="6" height="'+y+'" fill="#332417"/>'
+    +'<path d="M '+(x-26)+' '+(y+26)+' L '+(x+26)+' '+(y+26)+' L '+(x+16)+' '+y+' L '+(x-16)+' '+y+' Z" fill="#5d4028"/>'
+    +'<circle cx="'+x+'" cy="'+(y+30)+'" r="26" fill="url(#lampG)"/>'
+    +'<circle cx="'+x+'" cy="'+(y+30)+'" r="12" fill="#ffd98f"/>';
+}
+/* --- 图23 餐厅家庭聚餐 --- */
+function scRestFamily(){
+  var s=restInterior('#4a3526')+pendant(150,110)+pendant(560,110);
+  /* 长桌与餐后陈设 */
+  s+='<rect x="170" y="330" width="460" height="26" rx="8" fill="#8a5f3d"/>'
+    +'<rect x="178" y="322" width="444" height="8" rx="4" fill="#a5754c"/>'
+    +'<rect x="190" y="356" width="22" height="120" fill="#5d4028"/><rect x="588" y="356" width="22" height="120" fill="#5d4028"/>'
+    +'<ellipse cx="300" cy="326" rx="34" ry="9" fill="#e8e2d4"/><ellipse cx="430" cy="326" rx="34" ry="9" fill="#e8e2d4"/><ellipse cx="540" cy="326" rx="30" ry="8" fill="#e8e2d4"/>'
+    +'<rect x="352" y="310" width="10" height="17" rx="2" fill="#b8452e"/><ellipse cx="357" cy="328" rx="9" ry="4" fill="#e8e2d4"/>'
+    +'<rect x="500" y="312" width="8" height="15" rx="2" fill="#4a6a42"/><ellipse cx="504" cy="328" rx="9" ry="4" fill="#e8e2d4"/>'
+    +'<ellipse cx="368" cy="330" rx="12" ry="5" fill="#f2ead8"/><ellipse cx="472" cy="330" rx="12" ry="5" fill="#f2ead8"/>';
+  /* 家人围坐 */
+  s+=fig(250,318,104,'#7d4a3a')+hairTop(250,214,11,'#3c352c')+faceOn(250,214,10,'neutral');
+  s+=fig(560,320,100,'#5a5f7a',null,true)+hairTop(560,220,11,'#54422f')+faceOn(560,220,10,'neutral');
+  s+=fig(640,316,106,'#4a5568')+hairTop(640,210,12,'#2c2620')+faceOn(640,210,11,'neutral');
+  /* 患者起身去买单（手背瘢痕已淡） */
+  s+='<g transform="translate(470,270)"><circle cx="0" cy="0" r="24" fill="#f0c29a"/>'
+    +hairTop(0,0,22,'#241c14')+faceOn(0,0,20,'neutral')
+    +'<path d="M -20 118 L 20 118 L 16 24 L -16 24 Z" fill="#333a4c"/><path d="M -18 20 Q 34 34 52 84 L 40 96 Q 18 52 -14 42 Z" fill="#333a4c"/>'
+    +'<path d="M 40 90 Q 54 98 52 110" stroke="#d8a88a" stroke-width="3.4" opacity=".45" fill="none" stroke-linecap="round"/></g>';
+  return svgWrap(s);
+}
+
+/* --- 图24/25 熟悉的背影 --- */
+function scRestBack(){
+  var s=restInterior('#43301f')+pendant(180,110)+pendant(600,100);
+  /* 左侧其他食客一桌 */
+  s+='<rect x="204" y="252" width="130" height="14" rx="4" fill="#7a5436"/><rect x="218" y="266" width="12" height="84" fill="#4e3620"/><rect x="308" y="266" width="12" height="84" fill="#4e3620"/>'
+    +'<ellipse cx="252" cy="248" rx="15" ry="5" fill="#e8e2d4"/><rect x="284" y="238" width="8" height="14" rx="2" fill="#b8452e"/>'
+    +'<g transform="translate(238,236)"><circle cx="0" cy="-8" r="12" fill="#d8a878"/>'+hairTop(0,-8,11,'#54422f')+'<path d="M -12 44 L 12 44 L 9 6 L -9 6 Z" fill="#5a4a5e"/></g>'
+    +'<g transform="translate(300,240)"><circle cx="0" cy="-6" r="11" fill="#e8b48c"/><path d="M -11 -12 Q 0 -22 11 -12 L 9 -2 Q 0 -10 -9 -2 Z" fill="#2c2620"/><path d="M -11 40 L 11 40 L 8 4 L -8 4 Z" fill="#4a5568"/></g>';
+  /* 朋友的桌子：餐具与茶杯 */
+  s+='<rect x="470" y="300" width="230" height="22" rx="6" fill="#7a5436"/><rect x="478" y="294" width="214" height="7" rx="3" fill="#8a6242"/>'
+    +'<rect x="490" y="322" width="18" height="100" fill="#4e3620"/><rect x="662" y="322" width="18" height="100" fill="#4e3620"/>'
+    +'<ellipse cx="545" cy="296" rx="26" ry="7" fill="#e8e2d4"/><ellipse cx="640" cy="296" rx="22" ry="6" fill="#e8e2d4"/>'
+    +'<rect x="585" y="282" width="10" height="16" rx="3" fill="#4a6a42"/><rect x="614" y="284" width="9" height="14" rx="3" fill="#b8452e"/>';
+  /* 朋友（新郎）背影：深色西装 + 黑发，与对话场景一致 */
+  s+='<g transform="translate(590,260)">'
+    +'<circle cx="0" cy="-6" r="23" fill="#e8b48c"/>'
+    +'<path d="M -23 -14 Q 0 -36 23 -14 L 20 4 Q 0 -10 -20 4 Z" fill="#241c14"/>'
+    +'<path d="M -24 108 L 24 108 L 19 18 L -19 18 Z" fill="#2c3242"/>'
+    +'<rect x="-14" y="18" width="28" height="40" fill="#f4f2ec"/>'
+    +'<path d="M 0 18 L -6 36 L 0 56 L 6 36 Z" fill="#5a3040"/>'
+    +'<path d="M -22 -30 Q 0 -40 22 -30 L 18 -6 L -18 -6 Z" fill="#242a38"/>'
+    +'</g>';
+  /* 同事（侧影，棕发） */
+  s+='<g transform="translate(520,290)">'
+    +'<circle cx="0" cy="-46" r="15" fill="#f0c8a8"/>'
+    +'<path d="M -15 -52 Q 0 -66 15 -52 L 15 -42 Q 0 -52 -15 -42 Z" fill="#6e4a2c"/>'
+    +'<path d="M -17 56 L 17 56 L 13 -32 L -13 -32 Z" fill="#3f4a5e"/>'
+    +'</g>';
+  /* 患者背影（前景） */
+  s+='<g transform="translate(140,300)"><path d="M -46 200 L 46 200 L 36 40 Q 0 20 -36 40 Z" fill="#22283a"/><circle cx="0" cy="6" r="30" fill="#2a3044"/><path d="M -30 -6 Q 0 -34 30 -6 L 24 30 L -24 30 Z" fill="#1c2233"/><rect x="-14" y="34" width="12" height="90" fill="#22283a" transform="rotate(12 -8 79)"/><rect x="6" y="34" width="12" height="88" fill="#22283a" transform="rotate(-10 12 78)"/></g>';
+  return svgWrap(s);
+}
+
+/* --- 图26 听到对话（朋友=新郎；同事：眼镜棕发；说完话画面才失色变暗） --- */
+function scRestTalk(){
+  var s=restInterior('#4d3826')+pendant(140,100);
+  /* 两人的桌子与餐具 */
+  s+='<rect x="240" y="290" width="330" height="22" rx="6" fill="#7d5836"/>'
+    +'<rect x="248" y="284" width="314" height="7" rx="3" fill="#8a6242"/>'
+    +'<rect x="258" y="312" width="18" height="100" fill="#5d4028"/><rect x="534" y="312" width="18" height="100" fill="#5d4028"/>'
+    +'<ellipse cx="310" cy="286" rx="26" ry="7" fill="#e8e2d4"/><ellipse cx="470" cy="286" rx="26" ry="7" fill="#e8e2d4"/>'
+    +'<rect x="372" y="270" width="11" height="18" rx="3" fill="#4a6a42"/><rect x="400" y="272" width="10" height="16" rx="3" fill="#b8452e"/>';
+  /* 朋友（新郎）：深色西装、黑发、愤怒、抬手指点（手势动画） */
+  s+='<g transform="translate(330,240)">'
+    +'<rect x="-27" y="-64" width="54" height="80" rx="14" fill="#2c3242"/>'
+    +'<rect x="-19" y="-64" width="38" height="32" fill="#f4f2ec"/>'
+    +'<path d="M 0 -64 L -7 -47 L 0 -30 L 7 -47 Z" fill="#5a3040"/>'
+    +'<circle cx="0" cy="-80" r="24" fill="#e8b48c"/>'
+    +hairTop(0,-80,22,'#241c14')
+    +faceOn(0,-80,20,'angry')
+    +'<g class="an-gesture"><path d="M -26 -56 Q -60 -44 -70 -12 L -56 -2 Q -44 -32 -20 -40 Z" fill="#2c3242"/>'
+    +'<circle cx="-64" cy="-16" r="9" fill="#e8b48c"/></g>'
+    +'</g>';
+  /* 同事：灰蓝西装、棕发、眼镜（点头动画） */
+  s+='<g transform="translate(470,278)">'
+    +'<rect x="-25" y="-60" width="50" height="72" rx="13" fill="#3f4a5e"/>'
+    +'<rect x="-18" y="-60" width="36" height="28" fill="#e8e4da"/>'
+    +'<g class="an-nod">'
+    +'<circle cx="0" cy="-74" r="22" fill="#f0c8a8"/>'
+    +'<path d="M -22 -82 Q 0 -102 22 -82 L 22 -72 Q 0 -84 -22 -72 Z" fill="#6e4a2c"/>'
+    +'<path d="M -22 -76 Q -27 -50 -20 -36 L -14 -40 Q -19 -56 -17 -74 Z" fill="#6e4a2c"/>'
+    +'<circle cx="-8" cy="-74" r="7.5" fill="none" stroke="#2c313c" stroke-width="2"/><circle cx="10" cy="-74" r="7.5" fill="none" stroke="#2c313c" stroke-width="2"/><path d="M -0.5 -74 L 2.5 -74" stroke="#2c313c" stroke-width="2"/>'
+    +'<circle cx="-8" cy="-74" r="2.6" fill="#2c2420"/><circle cx="10" cy="-74" r="2.6" fill="#2c2420"/>'
+    +'<path d="M -6 -60 Q 2 -56 10 -61" stroke="#8a5a44" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+    +'</g></g>';
+  return svgWrap(s);
+}
+
+/* --- 图28 摔倒后看到的天花板 --- */
+function scFallCeiling(){
+  var s='<rect width="800" height="500" fill="#3a2c1e"/>'
+    +'<rect x="0" y="0" width="800" height="90" fill="#2c2115"/>'
+    +'<path d="M 0 90 H 800" stroke="#241a10" stroke-width="5"/>'
+    /* 中央吊灯 */
+    +'<g transform="translate(400,60)"><rect x="-4" y="-60" width="8" height="70" fill="#241a10"/>'
+    +'<path d="M -70 66 Q 0 40 70 66" stroke="#3a2a1e" stroke-width="7" fill="none"/>'
+    +'<path d="M -70 66 L -70 78 M 70 66 L 70 78 M 0 50 L 0 62" stroke="#3a2a1e" stroke-width="5"/>'
+    +'<circle cx="-70" cy="84" r="11" fill="#ffd98f"/><circle cx="70" cy="84" r="11" fill="#ffd98f"/><circle cx="0" cy="70" r="12" fill="#ffd98f"/>'
+    +'<circle cx="-70" cy="84" r="26" fill="url(#lampG)"/><circle cx="70" cy="84" r="26" fill="url(#lampG)"/><circle cx="0" cy="70" r="28" fill="url(#lampG)"/></g>'
+    /* 顶灯 */
+    +'<rect x="220" y="130" width="360" height="110" rx="10" fill="#ffedc2" opacity=".55"/>'
+    /* 俯身的食客 */
+    +'<g transform="translate(120,470)"><circle cx="0" cy="-90" r="26" fill="#d8a878"/><ellipse cx="0" cy="-40" rx="34" ry="40" fill="#5a4a3e"/><ellipse cx="-10" cy="-98" rx="6" ry="4" fill="#fff"/><ellipse cx="12" cy="-96" rx="6" ry="4" fill="#fff"/><ellipse cx="0" cy="-78" rx="10" ry="7" fill="#3a2c22"/></g>';
+  /* 远处站起身的朋友（回头） */
+  s+='<g transform="translate(560,500)"><circle cx="0" cy="-150" r="22" fill="#e8b48c"/>'
+    +'<path d="M -22 -158 Q 0 -176 22 -158 L 18 -140 Q 0 -152 -18 -140 Z" fill="#241c14"/>'
+    +'<circle cx="9" cy="-146" r="2.5" fill="#2c2420"/><circle cx="-3" cy="-146" r="2.5" fill="#2c2420"/>'
+    +'<path d="M -6 -136 L 8 -136" stroke="#7a4638" stroke-width="2.4" stroke-linecap="round"/>'
+    +'<path d="M -24 0 L 24 0 L 18 -122 L -18 -122 Z" fill="#2c3242"/></g>';
+  s+='<g transform="translate(680,490)"><circle cx="0" cy="-110" r="24" fill="#c99568"/><ellipse cx="0" cy="-60" rx="32" ry="38" fill="#4e4238"/></g>';
+  s+='<g transform="translate(420,500)"><circle cx="0" cy="-130" r="22" fill="#3a3a44"/><ellipse cx="0" cy="-80" rx="30" ry="34" fill="#33333d"/></g>';
+  return svgWrap(s);
+}
+
+/* --- 图29 跨过 --- */
+function scStepOver(){
+  var s='<rect width="800" height="500" fill="#33261a"/>'
+    +'<rect y="0" width="800" height="120" fill="#241a10"/>'
+    +'<path d="M 60 400 V 480 M 200 400 V 474 M 340 400 V 486 M 480 400 V 476 M 620 400 V 482 M 760 400 V 472" stroke="rgba(0,0,0,.3)" stroke-width="3"/>'
+    +'<path d="M 0 400 H 800" stroke="#241a10" stroke-width="4"/>';
+  s+='<g transform="translate(430,200) rotate(-14)"><circle cx="0" cy="-10" r="46" fill="#d8a878"/><path d="M -46 -40 Q 0 -78 46 -40 L 38 -6 L -38 -6 Z" fill="#241c14"/><path d="M -20 -26 Q 2 -20 26 -30" stroke="#8a5a44" stroke-width="4" fill="none"/><path d="M -14 -2 Q 2 8 20 -2" stroke="#7a4638" stroke-width="5" fill="none"/></g>';
+  s+='<rect x="120" y="150" width="60" height="200" rx="26" fill="#2a2f3d" transform="rotate(24 150 250)"/>';
+  s+='<path d="M 60 340 L 260 320 L 300 380 L 90 400 Z" fill="#171a22"/>';
+  s+='<path d="M 470 330 Q 500 300 560 320 L 620 400 L 470 400 Z" fill="#2a2f3d"/>';
+  s+='<rect x="0" y="400" width="800" height="100" fill="#1a130c"/>';
+  return svgWrap(s);
+}
+
+/* --- 图30 买单离开 --- */
+function scCheckout(){
+  var s=restInterior('#3c2b1c')+pendant(300,90);
+  /* 收银台 + 收银机 + 队列围栏 */
+  s+='<rect x="470" y="230" width="270" height="92" rx="6" fill="#7a5436"/>'
+    +'<rect x="470" y="222" width="270" height="14" rx="6" fill="#8a6242"/>'
+    +'<rect x="494" y="196" width="48" height="32" rx="4" fill="#2c313c"/><rect x="499" y="201" width="38" height="17" fill="#58e08c" opacity=".35"/>'
+    +'<rect x="580" y="206" width="66" height="20" rx="3" fill="#e8e2d4"/><rect x="588" y="211" width="50" height="3" fill="#b8a888"/><rect x="588" y="218" width="40" height="3" fill="#b8a888"/>'
+    +'<rect x="730" y="252" width="8" height="80" fill="#5d4028"/><rect x="700" y="248" width="68" height="6" rx="3" fill="#8a5f3d"/>'
+    /* 玻璃门透进夜色亮光 */
+    +'<rect x="700" y="150" width="86" height="230" fill="#f2d9a8" opacity=".75"/>'
+    +'<rect x="694" y="142" width="98" height="246" fill="none" stroke="#5d4028" stroke-width="7"/>'
+    +'<rect x="739" y="146" width="6" height="234" fill="#5d4028"/>';
+  /* 收银员 */
+  s+='<g transform="translate(640,240)"><circle cx="0" cy="-48" r="18" fill="#e8b48c"/>'+hairTop(0,-48,16,'#2c2620')+faceOn(0,-48,15,'neutral')+'<path d="M -22 70 L 22 70 L 17 -30 L -17 -30 Z" fill="#4a5568"/></g>';
+  /* 朋友背影买单（黑发深西装） */
+  s+='<g transform="translate(560,300)">'
+    +'<circle cx="0" cy="-64" r="24" fill="#e8b48c"/>'
+    +'<path d="M -24 -72 Q 0 -92 24 -72 L 20 -54 Q 0 -66 -20 -54 Z" fill="#241c14"/>'
+    +'<path d="M -24 60 L 24 60 L 19 -40 L -19 -40 Z" fill="#2c3242"/>'
+    +'<rect x="-14" y="-40" width="28" height="34" fill="#f4f2ec"/>'
+    +'<path d="M 0 -40 L -6 -22 L 0 -4 L 6 -22 Z" fill="#5a3040"/>'
+    +'<rect x="30" y="-26" width="58" height="34" rx="4" fill="#3a3f4a"/></g>';
+  /* 地上的患者（前景虚化）与围观食客 */
+  s+='<g transform="translate(120,400)" opacity=".5"><ellipse cx="0" cy="0" rx="120" ry="46" fill="#14100a"/></g>';
+  s+='<g transform="translate(360,360)" opacity=".6"><circle cx="0" cy="-40" r="16" fill="#d8a878"/><rect x="-18" y="-24" width="36" height="56" fill="#6e5a48"/></g>';
+  s+='<g transform="translate(250,372)" opacity=".6"><circle cx="0" cy="-34" r="14" fill="#c99568"/><rect x="-15" y="-20" width="30" height="48" fill="#5a4a5e"/></g>';
+  return svgWrap(s);
+}
+
+/* --- 图31 夜路 --- */
+function scNightStreet(){
+  var s='<rect width="800" height="500" fill="url(#evenSky)"/>'
+    +'<circle cx="120" cy="60" r="3" fill="#fff" opacity=".7"/><circle cx="240" cy="40" r="2" fill="#fff" opacity=".6"/><circle cx="700" cy="70" r="2.4" fill="#fff" opacity=".7"/><circle cx="620" cy="36" r="2" fill="#fff" opacity=".5"/>'
+    +'<rect y="330" width="800" height="170" fill="#20263a"/>'
+    +'<path d="M 0 330 L 800 330 L 800 500 L 0 500 Z" fill="#252c42"/>'
+    +'<path d="M 300 500 L 500 500 L 440 330 L 360 330 Z" fill="#39415c"/>';
+  function lamp(x,h){
+    return '<rect x="'+x+'" y="'+(330-h)+'" width="7" height="'+h+'" fill="#12141f"/>'
+      +'<path d="M '+(x-4)+' '+(330-h)+' L '+(x+34)+' '+(330-h-26)+'" stroke="#12141f" stroke-width="6" fill="none"/>'
+      +'<circle cx="'+(x+34)+'" cy="'+(330-h-22)+'" r="7" fill="#ffd98f"/>'
+      +'<path d="M '+(x+22)+' '+(330-h-18)+' L '+(x+46)+' '+(330-h-18)+' L '+(x+62)+' 330 L '+(x+6)+' 330 Z" fill="#ffd98f" opacity=".13"/>';
+  }
+  s+=lamp(90,190)+lamp(660,210);
+  s+='<g transform="translate(410,410)"><path d="M -22 90 L 22 90 L 16 -20 L -16 -20 Z" fill="#141824"/><circle cx="0" cy="-44" r="21" fill="#141824"/><rect x="-30" y="-50" width="60" height="12" rx="6" fill="#141824" transform="rotate(-24 0 -44)"/>'
+    +'<path d="M 10 88 L 150 60 L 156 76 L 16 96 Z" fill="#0e1119" opacity=".85"/></g>';
+  s+='<g opacity=".4"><circle cx="180" cy="380" r="10" fill="#39415c"/><rect x="166" y="390" width="28" height="56" fill="#39415c"/><circle cx="640" cy="376" r="9" fill="#39415c"/><rect x="628" y="386" width="25" height="50" fill="#39415c"/></g>';
+  return svgWrap(s);
+}
+
+/* --- 图32 泪水 --- */
+function scTears(){
+  var s='<rect width="800" height="500" fill="#1a2136"/>'
+    +'<circle cx="600" cy="110" r="90" fill="url(#lampG)"/><circle cx="600" cy="110" r="12" fill="#ffd98f"/>';
+  s+='<g transform="translate(360,250)">'
+    +'<path d="M -150 260 Q -140 40 -60 -20 Q 10 -80 90 -50 Q 150 -20 150 60 Q 150 200 130 260 Z" fill="#2a3040"/>'
+    +'<ellipse cx="10" cy="60" rx="120" ry="150" fill="#e0b088"/>'
+    +'<path d="M -110 20 Q -40 -90 60 -60 Q 130 -36 128 40 Q 80 -30 -10 -20 Q -70 -10 -96 60 Q -106 100 -104 150 L -120 150 Q -126 80 -110 20 Z" fill="#241c14"/>'
+    +'<path d="M -60 30 L 10 22" stroke="#241c14" stroke-width="8" stroke-linecap="round"/>'
+    +'<ellipse cx="-24" cy="56" rx="11" ry="7" fill="#3a2c22"/>'
+    +'<path d="M 6 132 Q 40 124 66 134" stroke="#8a5a44" stroke-width="6" fill="none" stroke-linecap="round"/>'
+    +'<path d="M -34 96 Q -30 128 -38 162 Q -42 184 -30 186 Q -20 184 -24 160 Q -22 128 -26 98 Z" fill="#bcd4ee" opacity=".9"/>'
+    +'<path d="M -14 90 Q -8 116 -14 140" stroke="#d4e4f6" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>'
+    +'<ellipse cx="-52" cy="120" rx="26" ry="14" fill="#ffdf9e" opacity=".18"/>'
+    +'</g>';
+  return svgWrap(s);
+}
+
+/* =====================================================
+   场景脚本
+===================================================== */
+var scenes=[
+  /* —— 第一部分：户外婚礼（双视角交替） —— */
+  {v:'normal',svg:scArrival,cap:'下午 2:30',dur:4},
+  {v:'patient',st:1,svg:scArrival,ov:'ov1',mono:'今天一定要表现得正常一点，不能让他觉得我很奇怪。',dur:4.5},
+  {v:'normal',svg:scGuests,dur:3.5},
+  {v:'patient',st:2,svg:scHands(1),ov:'ov2',mono:'阳光好刺眼……应该没事的，就一会儿。',phys:'皮肤开始有轻微的刺痛感。',dur:4.5},
+  {v:'normal',svg:scSeat,cap:'下午 2:35',dur:3.5},
+  {v:'patient',st:3,svg:scSeat,ov:'ov3',mono:'皮肤越来越痛了，像被针扎一般。',phys:'双手开始轻微颤抖。',dur:4.5},
+  {v:'normal',svg:scGuests,dur:3.5},
+  {v:'patient',st:4,svg:scHands(2),ov:'ov4',mono:'太疼了，皮肤也在发热……坚持住，马上就开始了。',phys:'心跳开始加速，呼吸变得急促。',dur:4.5},
+  {v:'normal',svg:scAisle,cap:'仪式即将开始',dur:3},
+  {v:'patient',st:5,svg:scAisle,ov:'ov5',mono:'撑住……我一定要看到他们交换誓言……',phys:'剧烈的灼烧感遍布全身暴露的皮肤，他感到一阵眩晕。',dur:4.5},
+  {v:'normal',svg:scBride,dur:4},
+  {v:'patient',st:6,svg:scBride,ov:'ov6',mono:'好痛……好痛……看不清了……',phys:'皮肤如同被火焰灼烧，双手肿胀得握不拢，水泡在阳光下破裂。',tremble:true,dur:4.5},
+  {v:'normal',svg:scArchCouple,dur:3.5},
+  {v:'patient',st:7,svg:scArchCouple,ov:'ov7',mono:'不……不能……不能倒下……',phys:'意识开始模糊，心悸剧烈，全身的疼痛达到无法忍受的程度。',tremble:true,dur:5},
+  {v:'normal',svg:scArchCouple,cap:'你是否愿意娶这位女士，无论贫穷还是富有，疾病还是健康，都爱她、尊重她……直到永远？',dur:5.5},
+  {v:'patient',st:7,faint:true,svg:scArchCouple,ov:'ov7',mono:'对不起……对不起……',fading:true,dur:4.5},
+
+  /* —— 黑场 —— */
+  {v:'none',black:3,dur:3},
+
+  /* —— 第二部分：医院病房 —— */
+  {v:'none',svg:scCeiling,cool:true,wake:true,mono:'这里是……医院？',phys:'远处的脚步声，仪器轻微的嘀嘀声。',dur:5},
+  {v:'patient',svg:scRoom,cool:true,bubbles:[
+    {x:'20%',y:'20%',who:'陌生宾客 A',t:'你看他手都肿了，还有那么多水泡……',cls:'whisper'},
+    {x:'50%',y:'12%',who:'陌生宾客 B',t:'小声点。',cls:'whisper right',d:1.8},
+    {x:'55%',y:'34%',who:'陌生宾客 C',t:'还不让人说了？你看他手上的瘢痕，很像皮革诶……',cls:'whisper',d:3.6}],
+    mono:'他们在说什么……他们在看我……',dur:8.5},
+  {v:'patient',svg:scBrideHold,cool:true,bubbles:[
+    {x:'28%',y:'18%',who:'新娘',t:'我不怪你，你也是一片好意庄重地来我的婚礼。',cls:''}],
+    mono:'好意……我毁掉了一切……',dur:6},
+  {v:'patient',svg:scGroomFace,cool:true,mono:'他在怪我……他一定很生气……',dur:5},
+  {v:'patient',svg:scHug,cool:true,cap:'不太熟的朋友默默地抱住了他',mono:null,dur:5},
+  {v:'patient',svg:scBreakdown,dim:true,mono:'如果包裹严实一点，是不是就可以避免这一切？<br>是不是不参加，也是一种更好的选择……<br>我为什么要去……为什么……',
+    phys:'剧痛依然在全身蔓延，但比起身体的疼痛，内心的自责更加难以承受。',dur:8},
+
+  /* —— 黑场 —— */
+  {v:'none',black:2.5,dur:2.5},
+
+  /* —— 第三部分：三个月后 · 饭店偶遇 —— */
+  {v:'none',svg:scRestFamily,cap:'三个月后',dur:4.5},
+  {v:'none',svg:scRestBack,mono:'那是……他？',dur:4.5},
+  {v:'none',svg:scRestBack,dur:3.5},
+  {v:'patient',grayAfter:2.6,svg:scRestTalk,bubbles:[
+    {x:'12%',y:'12%',who:'朋友（新郎）',t:'他不能接触阳光还不做防晒，肯定是故意毁掉我的婚礼的！',cls:'right',d:0},
+    {x:'16%',y:'40%',who:'朋友（新郎）',t:'反正这个玩笑我接受不了。',cls:'right',d:2.6},
+    {x:'56%',y:'52%',who:'同事',t:'我也这么觉得，他也太坏了吧。',cls:'',d:5.2}],
+    mono:null,dur:9.5},
+  {v:'patient',gray:true,shake:true,svg:scRestTalk,cap:'嗡——',dur:3.5},
+  {v:'none',gray:true,svg:scFallCeiling,dur:4},
+  {v:'none',gray:true,svg:scStepOver,cap:null,dur:4.5},
+  {v:'none',svg:scCheckout,dur:5},
+
+  /* —— 第四部分：回家路上 —— */
+  {v:'none',svg:scNightStreet,echo:'肯定是故意毁掉我的婚礼的……',echo2:'故意的……　毁掉……',dur:7},
+  {v:'none',svg:scTears,dur:5.5},
+
+  /* —— 结尾 —— */
+  {v:'none',special:'question',dur:0},
+  {v:'none',special:'knowledge',dur:0}
+];
+
+/* =====================================================
+   播放引擎
+===================================================== */
+var stage=document.getElementById('stage');
+var chip=document.getElementById('viewChip');
+var bar=document.getElementById('bar');
+var pauseBtn=document.getElementById('pauseBtn');
+var hint=document.getElementById('hint');
+var idx=-1,playing=true,remain=0,lastT=0,started=false;
+
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+function show(i){
+  idx=i;var sc=scenes[i];
+  stage.innerHTML='';
+  stage.classList.remove('fainting','shake');
+
+  if(sc.special==='question'){renderQuestion();updateHUD(sc);return;}
+  if(sc.special==='knowledge'){renderKnowledge();updateHUD(sc);return;}
+
+  var scene=el('div','scene');
+  if(sc.st)scene.classList.add('st'+sc.st);
+  if(sc.gray)scene.classList.add('gray');
+  if(sc.grayAfter)setTimeout(function(){scene.classList.add('gray');},sc.grayAfter*1000);
+  if(sc.cool)scene.classList.add('cool');
+  if(sc.dim)scene.classList.add('dim');
+  if(sc.v==='none'&&!sc.cool&&!sc.gray)scene.classList.add('');
+  if(sc.svg)scene.innerHTML=sc.svg();
+  stage.appendChild(scene);
+
+  if(sc.ov)scene.appendChild(el('div','ov '+sc.ov));
+  if(sc.v==='none'&&sc.black!==undefined&&!sc.cool&&!sc.gray){
+    scene.appendChild(el('div','ov',''));
+    scene.style.background='#000';
+  }
+  /* 黑场淡入淡出转场 */
+  if(sc.black!==undefined){
+    scene.style.background='#000';
+  }
+
+  /* 文本层 */
+  if(sc.cap)scene.appendChild(el('div','caption',sc.cap));
+  if(sc.echo){
+    scene.appendChild(el('div','textbox','<div class="mono echo">'+sc.echo+'</div>'));
+  }else if(sc.mono){
+    var cls='mono'+(sc.tremble?' tremble':'')+(sc.fading?' fading':'')+((sc.cool||sc.gray)?'':'');
+    var tb=el('div','textbox','<div class="'+cls+'">'+sc.mono+'</div>'+(sc.phys?'<div class="phys">'+sc.phys+'</div>':''));
+    scene.appendChild(tb);
+  }
+  if(sc.bubbles){
+    sc.bubbles.forEach(function(b){
+      var d=el('div','bubble '+b.cls,(b.who?'<span class="who">'+b.who+'</span>':'')+b.t);
+      d.style.left=b.x;d.style.top=b.y;
+      if(b.d)d.style.animationDelay=b.d+'s';
+      scene.appendChild(d);
+    });
+  }
+  if(sc.echo2){
+    var e2=el('div','textbox','<div class="mono echo" style="bottom:26%;font-size:15px;opacity:.8;animation-delay:2s">'+sc.echo2+'</div>');
+    e2.style.bottom='26%';e2.style.animationDelay='2s';
+    scene.appendChild(e2);
+  }
+  if(sc.black!==undefined||sc.v==='none'&&(sc.black!==undefined)){
+    scene.appendChild(el('div','blackcover'));
+  }
+
+  requestAnimationFrame(function(){requestAnimationFrame(function(){scene.classList.add('on');});});
+
+  if(sc.faint){
+    setTimeout(function(){stage.classList.add('fainting');
+      var bc=el('div','blackcover');bc.style.transition='opacity 1s ease';bc.style.opacity='0';
+      stage.appendChild(bc);
+      setTimeout(function(){bc.style.opacity='1';},1400);
+    },2600);
+  }
+  if(sc.shake)stage.classList.add('shake');
+
+  /* 患者苏醒：从模糊到清晰 */
+  if(sc.wake){
+    scene.style.filter='blur(14px) brightness(1.3)';
+    scene.style.transition='filter 3.5s ease';
+    setTimeout(function(){scene.style.filter='blur(0) brightness(1)';},120);
+  }
+
+  remain=sc.dur*1000;
+  updateHUD(sc);
+}
+function updateHUD(sc){
+  var pct=Math.round(idx/(scenes.length-1)*100);
+  bar.style.width=pct+'%';
+  if(sc.v==='patient'){chip.textContent='患者视角';chip.classList.add('patient');}
+  else if(sc.v==='normal'){chip.textContent='普通视角';chip.classList.remove('patient');}
+  else if(sc.black!==undefined){chip.textContent='';}
+  else{chip.textContent='';}
+  hint.style.display=(sc.dur===0)?'none':'block';
+}
+function next(){
+  if(idx>=scenes.length-1)return;
+  show(idx+1);
+}
+function restart(){
+  show(0);
+}
+
+/* 结尾问题页 */
+function renderQuestion(){
+  stage.innerHTML='';
+  var p=el('div','endpage',
+    '<div class="big">同一个选择</div>'
+    +'<div class="contrast">在患者眼中，是<em>爱与渴望</em>；<br>在旁人眼中，是<em>自私与破坏</em>。</div>'
+    +'<div class="q">谁才是对的？</div>'
+    +'<div class="btnrow"><button class="endbtn" id="learnBtn">了解 EPP</button>'
+    +'<button class="endbtn" id="againBtn">重新体验</button></div>');
+  stage.appendChild(p);
+  requestAnimationFrame(function(){p.style.opacity='1';});
+  document.getElementById('learnBtn').onclick=function(e){e.stopPropagation();show(scenes.length-1);};
+  document.getElementById('againBtn').onclick=function(e){e.stopPropagation();restart();};
+}
+/* 知识页 */
+function renderKnowledge(){
+  stage.innerHTML='';
+  var p=el('div','know',
+   '<div class="inner">'
+   +'<h2>了解 EPP</h2><div class="en">Erythropoietic Protoporphyria · 红细胞生成性原卟啉症</div>'
+   +'<h3>什么是 EPP？</h3>'
+   +'<p>EPP 是一种罕见的遗传性代谢疾病。患者体内缺乏一种关键的酶，导致原卟啉在血液和皮肤中积累。当原卟啉暴露在可见光下时，会引发连锁化学反应，损伤周围组织——表现为剧烈的灼烧型疼痛。</p>'
+   +'<h3>主要症状</h3>'
+   +'<ul><li>即使短暂暴露在阳光下（几分钟到几十分钟），暴露的皮肤就会出现剧烈疼痛和灼烧感</li>'
+   +'<li>皮肤红肿、水肿</li>'
+   +'<li>反复的光敏反应会导致皮肤增厚、出现瘢痕，看起来像"皮革"</li>'
+   +'<li>长期严格避光导致维生素 D 严重缺乏，引发骨质疏松、骨折风险增加</li></ul>'
+   +'<h3>患者的日常挑战</h3>'
+   +'<ul><li>必须全年严格防晒：长袖、手套、帽子、防晒霜</li>'
+   +'<li>即使在室内，窗户透进的阳光也可能引发症状</li>'
+   +'<li>因为长期遮盖和外观改变，容易陷入社交孤立</li>'
+   +'<li>需要终身补充维生素 D</li></ul>'
+   +'<div class="note">重要提示：这个故事基于真实的医学事实和患者经历，但具体情节为艺术创作。每位 EPP 患者的症状严重程度不同。疼痛是真实的，即使它从外表看不见。</div>'
+   +'<div class="src">主要信息来源：<br>· 《Journal of Clinical Endocrinology &amp; Metabolism》EPP 患者骨密度研究（2025）<br>· 诺华公司 EPP 患者自述《No longer living in fear》<br>· 罕见病相关医学文献与患者组织公开资料</div>'
+   +'<div class="btnrow"><button class="endbtn" id="backBtn">返回结尾</button>'
+   +'<button class="endbtn" id="restartBtn2">重新体验</button></div>'
+   +'</div>');
+  stage.appendChild(p);
+  document.getElementById('backBtn').onclick=function(e){e.stopPropagation();show(scenes.length-2);};
+  document.getElementById('restartBtn2').onclick=function(e){e.stopPropagation();restart();};
+}
+
+/* 交互 */
+stage.addEventListener('click',function(e){
+  if(e.target.closest('.endbtn'))return;
+  if(idx>=0&&scenes[idx].dur===0)return;
+  next();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key===' '||e.key==='ArrowRight'){e.preventDefault();next();}
+  if(e.key==='p'||e.key==='P')togglePause();
+});
+function togglePause(){
+  playing=!playing;
+  pauseBtn.textContent=playing?'暂停':'播放';
+}
+pauseBtn.addEventListener('click',function(e){e.stopPropagation();togglePause();});
+document.getElementById('startBtn').addEventListener('click',function(){
+  document.getElementById('intro').classList.add('hidden');
+  started=true;show(0);
+});
+
+/* 主循环 */
+function loop(t){
+  if(lastT===0)lastT=t;
+  var dt=t-lastT;lastT=t;
+  if(started&&playing&&idx>=0&&remain>0){
+    remain-=dt;
+    if(remain<=0)next();
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
